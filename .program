@@ -1,0 +1,6 @@
+name: sock
+version: 0.1.0
+author: @spacemany2k38
+description: Simple socket communication tool for direct TCP connections
+type: cli-tool
+

@@ -1,0 +1,38 @@
+NAME: sock
+VERSION: "0.1.0"
+DESCRIPTION: >
+  Simple socket communication tool for direct TCP connections. Enables bidirectional messaging between two endpoints over a network. Supports interactive chat, one-shot messages, and file transfers. Pure Python implementation using stdlib only.
+USAGE:
+  - "sock -l PORT"
+  - "sock HOST PORT"
+  - "sock --info"
+  - "sock --test PORT"
+  - "sock --help"
+  - "sock --version"
+OPTIONS:
+  - "-l, --listen PORT             Start server and listen for connections"
+  - "-s, --send MESSAGE            Send message and exit"
+  - "-f, --file FILE               Send file contents"
+  - "--info                        Display network information"
+  - "--test PORT                   Test port accessibility"
+  - "-h, --help                    Show help message"
+  - "-v, --version                 Show version"
+EXAMPLES:
+  - "sock -l 8080                  # Listen on port 8080"
+  - "sock localhost 8080           # Connect to localhost:8080"
+  - "sock 192.168.1.10 8080        # Connect to LAN host"
+  - "sock HOST PORT -s 'Hello!'    # Send message and exit"
+  - "sock HOST PORT -f file.txt    # Send file"
+  - "sock --info                   # Show network details"
+  - "sock --test 8080              # Test if port 8080 is available"
+OUTPUT: >
+  Interactive mode provides bidirectional communication. Messages prefixed with '< ' are received, '> ' for sending. Connection info displayed on start. Non-interactive modes output confirmation and exit.
+AUTHOR: "@spacemany2k38"
+DATE: "2026-01-05"
+NOTES:
+  - "Works on same machine (localhost), LAN, or internet (with port forwarding)"
+  - "Educational tool - no encryption, no authentication"
+  - "For internet connections, listener needs accessible IP or port forwarding"
+  - "Use Ctrl+C or Ctrl+D to exit interactive mode"
+  - "Pure Python - no external dependencies"
+
