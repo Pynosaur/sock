@@ -1,0 +1,49 @@
+NAME: sock
+VERSION: "0.1.0"
+DESCRIPTION: >
+  Pure Python socket communication tool. Send and receive messages and files
+  over TCP connections. Three modes: rec (receive), sen (send), mult (full duplex).
+  Reimagines netcat/telnet for the Pynosaur ecosystem. Stdlib only, no dependencies.
+USAGE:
+  - "sock rec PORT"
+  - "sock sen HOST PORT -m MESSAGE"
+  - "sock sen HOST PORT -f FILE"
+  - "sock mult -l PORT"
+  - "sock mult HOST PORT"
+  - "sock info"
+  - "sock test PORT"
+COMMANDS:
+  - "rec PORT                         Listen and receive messages or files"
+  - "sen HOST PORT                    Connect and send a message or file"
+  - "mult -l PORT                     Full duplex interactive mode (listen)"
+  - "mult HOST PORT                   Full duplex interactive mode (connect)"
+  - "info                             Show local/public IP and gateway"
+  - "test PORT                        Test if a port can be bound locally"
+OPTIONS:
+  - "-m, --msg MESSAGE                Message to send (sen mode)"
+  - "-f, --file FILE                  File to send (sen or mult mode)"
+  - "-d, --save-dir DIR               Directory to save received files"
+  - "-l, --listen                     Listen instead of connect (mult)"
+  - "-h, --help                       Show help"
+  - "-v, --version                    Show version"
+EXAMPLES:
+  - "sock rec 8080                    # Wait for incoming data"
+  - "sock sen 192.168.1.10 8080 -m 'hello'  # Send a message"
+  - "sock sen 192.168.1.10 8080 -f notes.txt # Send a file"
+  - "sock mult -l 8080                # Interactive listen"
+  - "sock mult 192.168.1.10 8080      # Interactive connect"
+  - "sock info                        # Show network details"
+  - "sock test 8080                   # Test port availability"
+OUTPUT: >
+  rec mode prints received messages and saves files. sen mode confirms delivery.
+  mult mode provides bidirectional interactive communication with in-session
+  commands: /file PATH, /ping, /quit. Exit code 0 on success, non-zero on error.
+AUTHOR: "@spacemany2k38"
+DATE: "2026-01-05"
+NOTES:
+  - "Uses a length-prefixed JSON+binary framing protocol over TCP."
+  - "Messages, files, pings are structured packets — not raw bytes."
+  - "Educational tool — no encryption, no authentication."
+  - "Works on localhost, LAN, and internet (with port forwarding)."
+  - "Pure Python — no external dependencies."
+
