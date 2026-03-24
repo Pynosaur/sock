@@ -17,7 +17,11 @@ def get_local_ip():
 
 
 def get_public_ip():
-    for url in ("https://api.ipify.org", "https://ifconfig.me/ip", "https://icanhazip.com"):
+    for url in (
+        "https://api.ipify.org",
+        "https://ifconfig.me/ip",
+        "https://icanhazip.com",
+    ):
         try:
             with urllib.request.urlopen(url, timeout=3) as r:
                 return r.read().decode("utf-8").strip()
@@ -60,7 +64,11 @@ def show_network_info():
 
     if public_ip == "Unable to determine":
         print("WARNING: Could not determine public IP (no internet?)")
-    elif local_ip.startswith("192.168.") or local_ip.startswith("10.") or local_ip.startswith("172."):
+    elif (
+        local_ip.startswith("192.168.") or
+        local_ip.startswith("10.") or
+        local_ip.startswith("172.")
+    ):
         print("Status: Behind NAT (home/office network)")
         print()
         print("To accept connections from the internet:")
