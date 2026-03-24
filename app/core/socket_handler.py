@@ -162,7 +162,10 @@ def interactive_mode(sock, save_dir=None):
                     print("\r\033[K< pong")
                     print("> ", end="", flush=True)
                 else:
-                    print(f"\r\033[K< [{ptype}] {payload.decode('utf-8', errors='replace')}")
+                    print(
+                        f"\r\x1b[K< [{ptype}] "
+                        f"{payload.decode('utf-8', errors='replace')}"
+                    )
                     print("> ", end="", flush=True)
         except OSError:
             running.clear()

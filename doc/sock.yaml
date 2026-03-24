@@ -1,5 +1,5 @@
 NAME: sock
-VERSION: "0.1.0"
+VERSION: "0.1.1"
 DESCRIPTION: >
   Pure Python socket communication tool. Send and receive messages and files
   over TCP connections. Three modes: rec (receive), sen (send), mult (full duplex).
