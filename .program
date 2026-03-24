@@ -1,5 +1,5 @@
 name: sock
-version: 0.1.0
+version: 0.1.1
 author: @spacemany2k38
 description: Pure Python socket communication tool for sending and receiving messages and files
 type: cli-tool
