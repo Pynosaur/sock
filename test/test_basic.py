@@ -5,6 +5,7 @@ import threading
 import json
 import struct
 import time
+import unittest
 
 
 HEADER_FMT = "!I"
@@ -42,106 +43,89 @@ def _recv_packet(sock):
     return header, payload
 
 
-def test_help():
-    result = subprocess.run([sys.executable, "app/main.py", "--help"],
-                            capture_output=True, text=True)
-    assert result.returncode == 0
-    assert "sock" in result.stdout
-    assert "rec" in result.stdout
-    assert "sen" in result.stdout
-    assert "mult" in result.stdout
-    print("[PASS] --help works")
+class TestSockCLI(unittest.TestCase):
+
+    def test_help(self):
+        result = subprocess.run([sys.executable, "app/main.py", "--help"],
+                                capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0)
+        self.assertIn("sock", result.stdout)
+        self.assertIn("rec", result.stdout)
+        self.assertIn("sen", result.stdout)
+        self.assertIn("mult", result.stdout)
+
+    def test_version(self):
+        result = subprocess.run([sys.executable, "app/main.py", "--version"],
+                                capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0)
+        self.assertIn("0.1.1", result.stdout)
+
+    def test_info(self):
+        result = subprocess.run([sys.executable, "app/main.py", "info"],
+                                capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0)
+        self.assertIn("Network Information", result.stdout)
+
+    def test_port_test(self):
+        result = subprocess.run([sys.executable, "app/main.py", "test", "9999"],
+                                capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0)
+        self.assertIn("Testing port", result.stdout)
 
 
-def test_version():
-    result = subprocess.run([sys.executable, "app/main.py", "--version"],
-                            capture_output=True, text=True)
-    assert result.returncode == 0
-    assert "0.1.0" in result.stdout
-    print("[PASS] --version works")
+class TestSockProtocol(unittest.TestCase):
 
+    def test_protocol_msg(self):
+        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        server.bind(("127.0.0.1", 0))
+        port = server.getsockname()[1]
+        server.listen(1)
 
-def test_info():
-    result = subprocess.run([sys.executable, "app/main.py", "info"],
-                            capture_output=True, text=True)
-    assert result.returncode == 0
-    assert "Network Information" in result.stdout
-    print("[PASS] info works")
+        def sender():
+            time.sleep(0.2)
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect(("127.0.0.1", port))
+            _send_packet(s, "msg", "hello")
+            s.close()
 
+        t = threading.Thread(target=sender, daemon=True)
+        t.start()
 
-def test_port_test():
-    result = subprocess.run([sys.executable, "app/main.py", "test", "9999"],
-                            capture_output=True, text=True)
-    assert result.returncode == 0
-    assert "Testing port" in result.stdout
-    print("[PASS] test works")
+        conn, _ = server.accept()
+        header, payload = _recv_packet(conn)
+        self.assertEqual(header["type"], "msg")
+        self.assertEqual(payload, b"hello")
+        conn.close()
+        server.close()
+        t.join(timeout=2)
 
+    def test_protocol_file(self):
+        server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        server.bind(("127.0.0.1", 0))
+        port = server.getsockname()[1]
+        server.listen(1)
 
-def test_protocol_msg():
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    server.bind(("127.0.0.1", 0))
-    port = server.getsockname()[1]
-    server.listen(1)
+        content = b"file content here"
 
-    def sender():
-        time.sleep(0.2)
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect(("127.0.0.1", port))
-        _send_packet(s, "msg", "hello")
-        s.close()
+        def sender():
+            time.sleep(0.2)
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect(("127.0.0.1", port))
+            _send_packet(s, "file", content, {"name": "test.txt", "size": len(content)})
+            s.close()
 
-    t = threading.Thread(target=sender, daemon=True)
-    t.start()
+        t = threading.Thread(target=sender, daemon=True)
+        t.start()
 
-    conn, _ = server.accept()
-    header, payload = _recv_packet(conn)
-    assert header["type"] == "msg"
-    assert payload == b"hello"
-    conn.close()
-    server.close()
-    t.join(timeout=2)
-    print("[PASS] protocol msg packet works")
-
-
-def test_protocol_file():
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    server.bind(("127.0.0.1", 0))
-    port = server.getsockname()[1]
-    server.listen(1)
-
-    content = b"file content here"
-
-    def sender():
-        time.sleep(0.2)
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect(("127.0.0.1", port))
-        _send_packet(s, "file", content, {"name": "test.txt", "size": len(content)})
-        s.close()
-
-    t = threading.Thread(target=sender, daemon=True)
-    t.start()
-
-    conn, _ = server.accept()
-    header, payload = _recv_packet(conn)
-    assert header["type"] == "file"
-    assert header["name"] == "test.txt"
-    assert header["size"] == len(content)
-    assert payload == content
-    conn.close()
-    server.close()
-    t.join(timeout=2)
-    print("[PASS] protocol file packet works")
-
-
-if __name__ == "__main__":
-    print("Running tests...")
-    test_help()
-    test_version()
-    test_info()
-    test_port_test()
-    test_protocol_msg()
-    test_protocol_file()
-    print("\nAll tests passed!")
+        conn, _ = server.accept()
+        header, payload = _recv_packet(conn)
+        self.assertEqual(header["type"], "file")
+        self.assertEqual(header["name"], "test.txt")
+        self.assertEqual(header["size"], len(content))
+        self.assertEqual(payload, content)
+        conn.close()
+        server.close()
+        t.join(timeout=2)
 
