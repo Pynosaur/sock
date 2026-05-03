@@ -35,3 +35,9 @@ bazel-*
 .DS_Store
 Thumbs.db
 
+
+# Nuitka build artifacts
+main.dist/
+main.build/
+main.onefile-build/
+*-darwin-arm64
