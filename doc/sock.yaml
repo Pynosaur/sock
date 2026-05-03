@@ -27,13 +27,13 @@ OPTIONS:
   - "-h, --help                       Show help"
   - "-v, --version                    Show version"
 EXAMPLES:
-  - "sock rec 8080                    # Wait for incoming data"
-  - "sock sen 192.168.1.10 8080 -m 'hello'  # Send a message"
-  - "sock sen 192.168.1.10 8080 -f notes.txt # Send a file"
-  - "sock mult -l 8080                # Interactive listen"
-  - "sock mult 192.168.1.10 8080      # Interactive connect"
-  - "sock info                        # Show network details"
-  - "sock test 8080                   # Test port availability"
+  - "sock rec 8080                              # Wait for incoming data"
+  - "sock sen 192.168.1.10 8080 -m 'hello'      # Send a message"
+  - "sock sen 192.168.1.10 8080 -f notes.txt    # Send a file"
+  - "sock mult -l 8080                          # Interactive listen"
+  - "sock mult 192.168.1.10 8080                # Interactive connect"
+  - "sock info                                  # Show network details"
+  - "sock test 8080                             # Test port availability"
 OUTPUT: >
   rec mode prints received messages and saves files. sen mode confirms delivery.
   mult mode provides bidirectional interactive communication with in-session
