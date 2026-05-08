@@ -6,6 +6,11 @@ import json
 import struct
 import time
 import unittest
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
+from app import __version__ as SOCK_VERSION
 
 
 HEADER_FMT = "!I"
@@ -58,7 +63,7 @@ class TestSockCLI(unittest.TestCase):
         result = subprocess.run([sys.executable, "app/main.py", "--version"],
                                 capture_output=True, text=True)
         self.assertEqual(result.returncode, 0)
-        self.assertIn("0.1.1", result.stdout)
+        self.assertIn(SOCK_VERSION, result.stdout)
 
     def test_info(self):
         result = subprocess.run([sys.executable, "app/main.py", "info"],
